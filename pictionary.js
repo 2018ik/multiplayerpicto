@@ -11,7 +11,7 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui.html');
 });
 
-var sqlol = mysql.createConnection({
+var sqlserver = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password',
@@ -19,7 +19,7 @@ var sqlol = mysql.createConnection({
 })
  
 // Log any errors connected to the db
-sqlol.connect(function(err){
+sqlserver.connect(function(err){
     if (err) console.log(err)
 })
 
@@ -32,7 +32,7 @@ var users = {}
 var clients = []
 var conte
 var host = null
-var choiceword = "sdfasdfasdfasdfasdfdsaf"
+var choiceword = "blank"
 io.on('connection', function(socket){
     var currentPlayer, myNick
     if(clients.length == 0){
@@ -60,13 +60,13 @@ io.on('connection', function(socket){
             io.emit('user disconnect', socket.id)
         }
     });
-    socket.on('get name', function(nawa){
+    socket.on('get name', function(username){
       for(var key in users){
         socket.emit('user connect', users[key], key)
       }
-      users[socket.id] = nawa
-      myNick = nawa
-      io.emit('user connect', nawa, socket.id)
+      users[socket.id] = username
+      myNick = username
+      io.emit('user connect', username, socket.id)
       io.emit('chat message', myNick + " has connected");
     });
     
@@ -98,7 +98,7 @@ io.on('connection', function(socket){
 	  socket.on('send word to server', function(word){
 	      choiceword = word.toLowerCase()
 	     // var sql = "INSERT INTO datatable (name, word) VALUES ('"+users[socket.id]+"','"+word+"')"
-	     // sqlol.query(sql, function (err, result) {
+	     // sqlserver.query(sql, function (err, result) {
       //     if (err) throw err;
       //     console.log(result)
       //     });

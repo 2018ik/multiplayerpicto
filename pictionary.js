@@ -10,7 +10,7 @@ app.use("/css",  express.static(path.join(__dirname, '/css')));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui.html');
 });
-
+/*
 var sqlserver = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -21,7 +21,7 @@ var sqlserver = mysql.createConnection({
 // Log any errors connected to the db
 sqlserver.connect(function(err){
     if (err) console.log(err)
-})
+})*/
 
 function getKey(data) {
   for (var prop in data)
@@ -107,5 +107,6 @@ io.on('connection', function(socket){
     
 
 
-http.listen(process.env.PORT, process.env.IP, function(){
+http.listen(8000, process.env.IP, function(){
+	console.log("connected to port " + 8000)
 })

@@ -2,12 +2,6 @@
 
 This is a multiplayer pictionary game with a chatbox that uses express and socket.io 
 
-To use:
-
-clone directory
-
-install dependencies with npm
-
-run pictionary.js with node
+With sockets, we can get real time updates of the chatbox and the drawing pad!
 
 default port is 8000

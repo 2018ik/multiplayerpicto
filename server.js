@@ -68,7 +68,7 @@ io.on('connection', function(socket){
         io.emit('special message', users[socket.id] +" has guessed the word: " + choiceword +"!")
         io.emit('clear the board')
         host = socket.id
-        socket.emit('do host stuff')
+        io.emit('clear word')
       }
     });
             

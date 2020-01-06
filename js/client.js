@@ -54,6 +54,9 @@ $(function () {
       $('#wordlabel').html("")
       socket.emit('clearCanvas');
 	})
+	socket.on('clear word', function(){
+		$('#currentword').text("")
+	})
 	socket.on('set drawer', function(name){
 		$('#drawer').text(name)
 	})

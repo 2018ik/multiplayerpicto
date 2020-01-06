@@ -20,9 +20,17 @@ var currentPlayer
 io.on('connection', function(socket){
     var myNick
     socket.emit('setup game')
+
+    //Sets up name of current drawer for all players
+    if(host == null) io.emit('set drawer', 'no one')
+    else io.emit('set drawer', users[host])
+
+    //logging for debugging
     console.info('New client connected (id=' + socket.id + ').');
     clients.push(socket.id);
     console.info('this is the client array: ' + clients)
+
+    //for when someone disconnects
     socket.on('disconnect', function() {
         var index = clients.indexOf(socket.id);
         if (index != -1) {
@@ -43,6 +51,7 @@ io.on('connection', function(socket){
             io.emit('user disconnect', socket.id)
         }
     });
+
     socket.on('get name', function(username){
       for(var key in users){
         socket.emit('user connect', users[key], key)
@@ -53,12 +62,6 @@ io.on('connection', function(socket){
       io.emit('chat message', myNick + " has connected");
     });
     
-    // socket.on('send image to server', function(canvas){
-    //   conte = canvas 
-    // });
-    // socket.on('set canvas', function(){
-    //   socket.emit('set canvas',conte)
-    // })
     socket.on('chat message', function(msg){
       io.emit('chat message', users[socket.id] + ": "+msg);
       if(msg.toLowerCase().includes(choiceword)){
@@ -76,8 +79,6 @@ io.on('connection', function(socket){
 			io.emit('clearCanvas');
     });
     socket.on('check status', function(){
-      console.log(socket.id)
-      console.log(host)
       if(socket.id == host || host == null){
         socket.emit('check status', true)
         host = socket.id
@@ -88,12 +89,9 @@ io.on('connection', function(socket){
       if(socket.id == host || host == null){
 	      choiceword = word.toLowerCase()
         io.emit('special message', users[socket.id] + " is drawing. Try to guess his word!")
+        io.emit('set drawer', users[host])
+        socket.emit('set word', choiceword)
       }
-	     // var sql = "INSERT INTO datatable (name, word) VALUES ('"+users[socket.id]+"','"+word+"')"
-	     // sqlserver.query(sql, function (err, result) {
-      //     if (err) throw err;
-      //     console.log(result)
-      //     });
 	  })
 });
     

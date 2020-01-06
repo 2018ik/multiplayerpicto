@@ -43,7 +43,6 @@ $(function () {
 		$("#favcolor")[0].click();
 	})
 	$("#users").on('click', ".userbox", function(){
-		console.log($(this).text())
 		$('#m').val("@"+$(this).text());
 		$("#m").focus()
 	})
@@ -54,7 +53,13 @@ $(function () {
     socket.on('clear the board', function(){
       $('#wordlabel').html("")
       socket.emit('clearCanvas');
-    })
+	})
+	socket.on('set drawer', function(name){
+		$('#drawer').text(name)
+	})
+	socket.on('set word', function(word){
+		$('#currentword').text(word)
+	})
     socket.on('special message', function(msg){
       $('#chatcontent').append($('<p>').css({'color': '#3b5998', 'font-weight': 'bold'}).text(msg));
       $('#chatcontent').scrollTop($('#chatcontent')[0].scrollHeight);

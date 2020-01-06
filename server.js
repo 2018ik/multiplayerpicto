@@ -73,10 +73,13 @@ io.on('connection', function(socket){
     });
             
     socket.on('draw', function (line) {
-			io.emit('draw', line);
+      if(socket.id == host || host == null)
+        io.emit('draw', line);
+      else
+        socket.emit('warning', "It is not your turn! Your strokes are only visible to yourself.")
     });
     socket.on('clearCanvas', function (){
-			io.emit('clearCanvas');
+      if(socket.id == host || host == null) io.emit('clearCanvas');
     });
     socket.on('check status', function(){
       if(socket.id == host || host == null){

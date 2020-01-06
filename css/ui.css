@@ -28,17 +28,25 @@ body{
     background-color:white;
     width: 250px;
     float: left;
-    padding: 10px;
     display: inline;
+    margin: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+#chatpanel h3{
+    padding: 20px;
+    background:#3b5998;
+    color: white;
+
 }
 #chatcontent{
     float: top;
     overflow:auto;
     overflow-wrap: break-word;
     word-wrap: break-word;
+    font-size: 14px;
     min-width: 100%;
-    max-height: 600px;
-    min-height: 600px;
+    max-height: 567px;
+    min-height: 567px;
     -ms-word-break: break-all;
     /* This is the dangerous one in WebKit, as it breaks things wherever */
     word-break: break-all;
@@ -52,13 +60,20 @@ body{
     hyphens: auto; 
     
 }
+#chatcontent p{
+    padding: 0 8px 0 8px;
+    margin-bottom: 0;
+}
 canvas{
-    border-color: #3b5998;
-    border-style: solid;
-    border-width: 5px;
+    margin: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 #chatcontrol{
     height:8%;
+    padding: 8px;
+}
+#m{
+    font-size: 11pt;
 }
 #favcolor{
     display: none
@@ -150,6 +165,8 @@ a, a:hover, a:focus {
     transition: all 0.6s cubic-bezier(0.945, 0.020, 0.270, 0.665);
     transform-origin: bottom left;
     height: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-right: 5px;
     float: left;
 }
 

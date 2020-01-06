@@ -75,7 +75,13 @@ $(function () {
     })
     socket.on('user disconnect', function(index){
       $('#' + index).remove();
-    })
+	})
+	socket.on('warning', function(msg){
+		if($('#chatcontent').children().last().attr('id') != 'warning'){
+			$('#chatcontent').append($("<p id = 'warning'>").css({'color': 'red', 'font-weight': 'bold'}).text(msg));
+      		$('#chatcontent').scrollTop($('#chatcontent')[0].scrollHeight);
+		}
+	});
     socket.on('setup game', function(){
       $('#enterName').modal({backdrop: 'static', keyboard: false}) 
       console.log("it worked")

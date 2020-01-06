@@ -1,142 +1,128 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Pictionary</title>
-  </head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-  <link rel="stylesheet" href="/css/ui.css" type="text/css" />
-<script>
-  $(function () {
-    var socket = io();
-    window.onload = function(){
-      var name = window.prompt("Please enter your name", "guest")
-      $('#chatnick').val(name)
-      socket.emit('get name', name)
-      socket.emit('set canvas')
-    }
-    $("#m").on('keyup', function (e) {
-      if (e.keyCode == 13) {
-        socket.emit('chat message', $('#m').val());
-        $('#m').val('');
-      }
-    });
-    socket.on('clear the board', function(){
-      $('#wordbox').html("")
-      //socket.emit('clearCanvas');
-    })
-    socket.on('special message', function(msg){
-      $('#chatcontent').append($('<p>').css('color', 'red').text(msg));
-      $('#chatcontent').scrollTop($('#chatcontent')[0].scrollHeight);
-    });
-    socket.on('chat message', function(msg){
-      $('#chatcontent').append($('<p>').text(msg));
-      $('#chatcontent').scrollTop($('#chatcontent')[0].scrollHeight);
-    });
-    socket.on('user connect', function(name, key){
-      var e = $('<div></div>').text(name)
-      $('#users').append(e);
-      e.attr('id', key);
-    })
-    socket.on('user disconnect', function(index){
-      $('#' + index).remove();
-    })
-    socket.on('do host stuff', function(){
-      console.log("it worked")
-      var choice = window.prompt("You have guessed the word first, or are the only person on right now. Pick a word.", "apple")
-      socket.emit('my turn now')
-      $('#wordbox').html(choice)
-      socket.emit('send word to server',choice)
-    })
-    //canvas stuff
-    var canvas = $('#canvas'),
-		  selectedcolor = $('.color'),
-		  context = canvas[0].getContext('2d'),
-		  lastpoint = null,
-		  status = false,
-		  myturn = true;
-	    socket.on('draw', draw);
-    $('#clearCanvas').click(function(){
-			socket.emit('clearCanvas');
-    });
-    socket.on('clearCanvas', function(){
-      console.log("clicked")
-      context.clearRect(0,0, canvas.width(), canvas.height());
-    })
-	  function draw(line) {
-		  context.lineJoin = 'round';
-		  context.lineWidth = line.lineWidth
-		  context.strokeStyle = line.color
-		  context.beginPath();
-		
-		  if(line.from) {
-			  context.moveTo(line.from.x, line.from.y);
-		  }else{
-			  context.moveTo(line.to.x-1, line.to.y);
-		  }
-		
-		  context.lineTo(line.to.x, line.to.y);
-		  context.closePath();
-		  context.stroke();
-		  
-	    }
-    canvas.mouseout(function(e) {
-	    status = false;
-	  });
-	
-	  canvas.mouseup(function(e) {
-  		status = false;
-    });
-    canvas.mousedown(function(e) {
-  		if(myturn) {
-  			status = true;
-  			var newpoint = { x: e.pageX - this.offsetLeft, y: e.pageY - this.offsetTop},
-  				line = { from: null, to: newpoint, color: $("#favcolor").val(), lineWidth: $('#favsize').val()};
-  			
-  			draw(line);
-  			lastpoint = newpoint;
-  			socket.emit('draw', line);
-  	  }
-	  });
-	
-	  canvas.mousemove(function(e) {
-  		if(myturn && status) {
-  			var newpoint = { x: e.pageX - this.offsetLeft, y: e.pageY - this.offsetTop},
-  				line = { from: lastpoint, to: newpoint, color: $("#favcolor").val(), lineWidth: $('#favsize').val()};
-  			
-  			draw(line);
-  			lastpoint = newpoint;
-  			socket.emit('draw', line);
-  		} 
-  	});
-  	
-	  
-  });
-</script>
-  <body>
-    <div id = "container">
-  			<div id="drawpanel">
-  			  <div id= "wordbox"></div>
-  				<canvas id="canvas" width="750" height="750"></canvas>
-  			</div>
-  			  <div id="chatpanel">
-    			  <div id="chatcontent">
-    			    <center><h>Chat:</h></center>
-    			  </div>
-    			  <div id = "chatcontrol">
-              <input id="m" autocomplete="off" style="font-size:16pt; width:98%"/>
-    			  </div>
-  			</div>
-  			<div id = "users">
-  		    <div id = "drawcontrol">
-  		      <input type = "button" id ="clearCanvas" value = "Clear" />
-            <input type="color" id="favcolor" value="#000000">
-            <br/>
-            <p1>Brush Size:</p1>
-            <input type="range" id="favsize" min = "1" max = "50" value = "5">
-  		    </div>
-  				  
-  			</div>
-			</div>
-  </body>
+
+<head>
+  <title>Pictionary</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+  integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+  integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+<script src="js/client.js"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/ui.css" type="text/css" />
+
+<body>
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <h3>Simple Pictionary</h3>
+      </div>
+
+      <ul class="list-unstyled components">
+        <li>
+          <p>Currently drawing: </p>
+        </li>
+        <li>
+          <p>Your word: </p>
+        </li>
+        <li>
+          <a id="pickword">Pick Word</a>
+        </li>
+        <li>
+          <a id="clearCanvas">Clear</a>
+        </li>
+        <li>
+          <a id="pickColor">Color</a>
+          <input type="color" id="favcolor" value="#000000">
+        </li>
+        <li>
+            <input type="range" class="custom-range" id="favsize" min="0" max="50" value="5">
+        </li>
+      </ul>
+      <ul class="list-unstyled components" id = "users">
+        <p>Connected Users</p>
+      </ul>
+    </nav>
+      <div id = "drawpanel">
+      <canvas id="canvas" width="1000" height="800"></canvas>
+    </div>
+      <div id="chatpanel">
+        
+        <h3>Chat:</h3>
+        <div id="chatcontent">
+        </div>
+        <div id="chatcontrol">
+          <input id="m" class="form-control" autocomplete="off" style="font-size:16pt; width:98%" />
+        </div>
+      </div>
+
+    <div> Your word is: <span id="wordlabel"></span></div>
+    <div class="modal fade" id="enterName" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Enter your name</h5>
+          </div>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input type="text" id="username" class="form-control" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="save">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+  <div class="modal fade" id="enterWord" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Enter word</h5>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <input type="text" id="userword" class="form-control" placeholder="Word" aria-label="Username"
+              aria-describedby="basic-addon1">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="savew">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="nothost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">It is not your turn!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            Someone else is currently drawing. You can pick a word to draw if you guess what they are drawing first.
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>

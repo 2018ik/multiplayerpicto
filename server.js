@@ -3,42 +3,22 @@ var app = express()
 var http = require("http").Server(app)
 var io = require("socket.io")(http)
 var path = require('path')
-var mysql = require('mysql')
 
 app.use("/css",  express.static(path.join(__dirname, '/css')));
-
+app.use("/js",  express.static(path.join(__dirname, '/js')));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui.html');
 });
-/*
-var sqlserver = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'words'
-})
- 
-// Log any errors connected to the db
-sqlserver.connect(function(err){
-    if (err) console.log(err)
-})*/
 
-function getKey(data) {
-  for (var prop in data)
-    return prop;
-}
 
 var users = {}
 var clients = []
-var conte
 var host = null
 var choiceword = "blank"
+var currentPlayer
 io.on('connection', function(socket){
-    var currentPlayer, myNick
-    if(clients.length == 0){
-      host = socket.id
-      socket.emit('do host stuff')
-    }
+    var myNick
+    socket.emit('setup game')
     console.info('New client connected (id=' + socket.id + ').');
     clients.push(socket.id);
     console.info('this is the client array: ' + clients)
@@ -49,9 +29,11 @@ io.on('connection', function(socket){
             io.emit('chat message', users[socket.id] + " has disconnected")
             clients.splice(index, 1);
             if(socket.id == host){
-              host = clients[0]
               if(clients.length == 0){
                 host = null
+              }
+              else{
+              host = clients[0]
               }
             }
             delete users[socket.id];
@@ -89,14 +71,23 @@ io.on('connection', function(socket){
     socket.on('draw', function (line) {
 			io.emit('draw', line);
     });
-	  socket.on('my turn now', function(msg){
-	    io.emit('special message', "It is now "+users[socket.id] +"'s"+" turn to draw!")
-	  })
     socket.on('clearCanvas', function (){
 			io.emit('clearCanvas');
-	  });
+    });
+    socket.on('check status', function(){
+      console.log(socket.id)
+      console.log(host)
+      if(socket.id == host || host == null){
+        socket.emit('check status', true)
+        host = socket.id
+    }
+      else socket.emit('check status', false);
+    })
 	  socket.on('send word to server', function(word){
+      if(socket.id == host || host == null){
 	      choiceword = word.toLowerCase()
+        io.emit('special message', users[socket.id] + " is drawing. Try to guess his word!")
+      }
 	     // var sql = "INSERT INTO datatable (name, word) VALUES ('"+users[socket.id]+"','"+word+"')"
 	     // sqlserver.query(sql, function (err, result) {
       //     if (err) throw err;

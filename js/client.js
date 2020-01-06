@@ -10,6 +10,9 @@ $(function () {
 		$('#enterName').modal('hide')
 	  }
 	})    
+	$("#scaleset").on('click',function(){
+		$('#setscale').modal('show')
+	})
 	$("#savew").on('click', function(){
 		let word = $("#userword").val()
 		if(word.length > 0){
@@ -18,6 +21,14 @@ $(function () {
 			$('#wordlabel').text(word)
 		}
 	})
+	
+	$(document).on('input change', '#zoomslider', function() {
+		endPos = $('#zoomslider').val();
+		ctx= $("#canvas")[0].getContext('2d');
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.scale(1*endPos/100,1*endPos/100)
+		$('#curvalue').text(endPos/100)
+	});
 	$("#pickword").on('click', function(){
 		socket.emit('check status')
 

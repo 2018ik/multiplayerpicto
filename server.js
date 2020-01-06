@@ -6,6 +6,7 @@ var path = require('path')
 
 app.use("/css",  express.static(path.join(__dirname, '/css')));
 app.use("/js",  express.static(path.join(__dirname, '/js')));
+app.use("/img",  express.static(path.join(__dirname, '/img')));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui.html');
 });

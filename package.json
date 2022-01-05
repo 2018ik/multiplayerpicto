@@ -1,0 +1,25 @@
+{
+  "name": "multiplayerpicto",
+  "version": "1.0.0",
+  "description": "Pictionary with sockets",
+  "main": "server.js",
+  "dependencies": {
+    "express.js": "^1.0.0",
+    "socket.io": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ian-kang/multiplayerpicto.git"
+  },
+  "author": "Ian Kang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ian-kang/multiplayerpicto/issues"
+  },
+  "homepage": "https://github.com/ian-kang/multiplayerpicto#readme"
+}

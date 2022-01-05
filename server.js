@@ -8,7 +8,7 @@ app.use("/css",  express.static(path.join(__dirname, '/css')));
 app.use("/js",  express.static(path.join(__dirname, '/js')));
 app.use("/img",  express.static(path.join(__dirname, '/img')));
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/ui.html');
+  res.sendFile(__dirname + '/index.html');
 });
 
 
@@ -78,9 +78,11 @@ io.on('connection', function(socket){
       else
         socket.emit('warning', "It is not your turn! Your strokes are only visible to yourself.")
     });
+
     socket.on('clearCanvas', function (){
       if(socket.id == host || host == null) io.emit('clearCanvas');
     });
+
     socket.on('check status', function(){
       if(socket.id == host || host == null){
         socket.emit('check status', true)
@@ -88,6 +90,7 @@ io.on('connection', function(socket){
     }
       else socket.emit('check status', false);
     })
+
 	  socket.on('send word to server', function(word){
       if(socket.id == host || host == null){
 	      choiceword = word.toLowerCase()
